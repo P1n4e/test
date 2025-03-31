@@ -282,10 +282,13 @@
         /* Top 10 (1 item with rank) */
         .top10-item {
             width: 160px;
+            height: 240px; /* Фиксированная высота */
             background-color: var(--tg-secondary-bg);
             border-radius: 12px;
             padding: 12px;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
         
         .top10-rank {
@@ -302,12 +305,13 @@
             justify-content: center;
             font-weight: bold;
             font-size: 14px;
+            z-index: 1;
         }
         
         .top10-logo {
             width: 50px;
             height: 50px;
-            margin: 0 auto 8px;
+            margin: 8px auto;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -315,6 +319,7 @@
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
+            flex-shrink: 0;
         }
         
         .top10-name {
@@ -325,6 +330,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             font-size: 14px;
+            flex-shrink: 0;
         }
         
         .top10-desc {
@@ -332,11 +338,16 @@
             color: var(--tg-hint-color);
             margin-bottom: 8px;
             text-align: center;
-            white-space: normal;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            flex-grow: 1;
+            min-height: 36px; /* Минимальная высота для 2 строк */
+        }
+        
+        .top10-btn-container {
+            flex-shrink: 0;
         }
         
         /* Section headers */
@@ -741,7 +752,7 @@
             document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.themeParams.secondary_bg_color || '#f4f4f5');
             
             // Check if user is admin (replace with your Telegram ID)
-            const adminIds = [123456789]; // Add your Telegram ID here
+            const adminIds = [348283352]; // Add your Telegram ID here
             if (adminIds.includes(tg.initDataUnsafe.user?.id)) {
                 document.getElementById('admin-btn').style.display = 'block';
             }
@@ -1095,7 +1106,9 @@
                         </div>
                         <div class="top10-name">${item.name}</div>
                         <div class="top10-desc">${item.desc || 'Описание отсутствует'}</div>
-                        <button class="play-btn" onclick="openSite('${item.url}')">Играть</button>
+                        <div class="top10-btn-container">
+                            <button class="play-btn" onclick="openSite('${item.url}')">Играть</button>
+                        </div>
                     </div>
                 `;
                 
