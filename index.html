@@ -169,7 +169,6 @@
             font-size: 20px;
         }
         
-        /* Swiper containers */
         .swiper {
             width: 100%;
             padding: 10px 16px;
@@ -179,7 +178,6 @@
             width: auto;
         }
         
-        /* Popular Top (3 items) */
         .popular-top-item {
             width: 120px;
             background-color: var(--tg-secondary-bg);
@@ -222,7 +220,6 @@
             cursor: pointer;
         }
         
-        /* Weekly Offers (1 big item) */
         .weekly-offer-item {
             width: 280px;
             background-color: var(--tg-secondary-bg);
@@ -279,7 +276,6 @@
             cursor: pointer;
         }
         
-        /* Top 10 (1 item with rank) */
         .top10-item {
             width: 160px;
             height: 200px;
@@ -351,7 +347,6 @@
             flex-shrink: 0;
         }
         
-        /* Section headers */
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -371,7 +366,6 @@
             cursor: pointer;
         }
         
-        /* Profile section */
         .profile-container {
             padding: 16px;
         }
@@ -424,7 +418,6 @@
             color: var(--tg-hint-color);
         }
         
-        /* Admin modal */
         .modal {
             display: none;
             position: fixed;
@@ -740,6 +733,9 @@
         let popularTopSwiper, weeklyOfferSwiper, top10Swiper;
         
         function initApp() {
+            // Принудительно обновляем кэш при каждом входе
+            updateCacheBuster();
+            
             tg.expand();
             tg.enableClosingConfirmation();
             
@@ -753,7 +749,7 @@
             document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.themeParams.secondary_bg_color || '#f4f4f5');
             
             // Check if user is admin (replace with your Telegram ID)
-            const adminIds = [348283352]; // Add your Telegram ID here
+            const adminIds = [348283352];
             if (adminIds.includes(tg.initDataUnsafe.user?.id)) {
                 document.getElementById('admin-btn').style.display = 'block';
             }
@@ -761,7 +757,7 @@
             // Load profile data
             loadProfile();
             
-            // Load app data
+            // Load app data with cache buster
             loadData();
             
             // Initialize swipers
@@ -774,6 +770,19 @@
             setupEventListeners();
         }
         
+        function updateCacheBuster() {
+            // Добавляем параметр к URL для предотвращения кэширования
+            const url = new URL(window.location.href);
+            url.searchParams.set('nocache', Date.now());
+            window.history.replaceState({}, document.title, url.toString());
+            
+            // Также очищаем localStorage при первом запуске
+            if (!localStorage.getItem('cacheInitialized')) {
+                localStorage.clear();
+                localStorage.setItem('cacheInitialized', 'true');
+            }
+        }
+        
         function loadProfile() {
             const user = tg.initDataUnsafe.user;
             if (user) {
@@ -781,7 +790,10 @@
                 document.getElementById('profile-username').textContent = `@${user.username || 'no_username'}`;
                 
                 if (user.photo_url) {
-                    document.getElementById('profile-photo').style.backgroundImage = `url(${user.photo_url})`;
+                    // Добавляем параметр времени для предотвращения кэширования аватара
+                    const photoUrl = new URL(user.photo_url);
+                    photoUrl.searchParams.set('t', Date.now());
+                    document.getElementById('profile-photo').style.backgroundImage = `url(${photoUrl.toString()})`;
                 } else {
                     document.getElementById('profile-photo').innerHTML = `<i class="fas fa-user" style="color: white; font-size: 40px;"></i>`;
                 }
@@ -795,220 +807,161 @@
         function loadData() {
             const savedData = localStorage.getItem('webAppData');
             if (savedData) {
-                appData = JSON.parse(savedData);
+                try {
+                    appData = JSON.parse(savedData);
+                    console.log('Данные загружены из кэша');
+                    
+                    // Проверяем, есть ли данные в кэше
+                    if (Object.keys(appData).length === 0) {
+                        loadDefaultData();
+                    }
+                } catch (e) {
+                    console.error('Ошибка при загрузке данных из кэша', e);
+                    loadDefaultData();
+                }
             } else {
-                // Default data with more sites
-                appData = {
-                    "popular-top": [
-                        {
-                            name: "Google",
-                            url: "https://google.com",
-                            logo: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
-                            color: "#4285F4"
-                        },
-                        {
-                            name: "YouTube",
-                            url: "https://youtube.com",
-                            logo: "https://www.youtube.com/s/desktop/d743f786/img/favicon_144x144.png",
-                            color: "#FF0000"
-                        },
-                        {
-                            name: "GitHub",
-                            url: "https://github.com",
-                            logo: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-                            color: "#333"
-                        },
-                        {
-                            name: "Twitter",
-                            url: "https://twitter.com",
-                            logo: "https://abs.twimg.com/favicons/twitter.ico",
-                            color: "#1DA1F2"
-                        },
-                        {
-                            name: "Instagram",
-                            url: "https://instagram.com",
-                            logo: "https://instagram.com/favicon.ico",
-                            color: "#E1306C"
-                        },
-                        {
-                            name: "Facebook",
-                            url: "https://facebook.com",
-                            logo: "https://facebook.com/favicon.ico",
-                            color: "#1877F2"
-                        }
-                    ],
-                    "weekly-offer": [
-                        {
-                            name: "Spotify",
-                            url: "https://spotify.com",
-                            image: "https://www.scdn.co/i/_global/open-graph-default.png",
-                            logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
-                            title: "Spotify - 3 месяца премиум бесплатно"
-                        },
-                        {
-                            name: "Udemy",
-                            url: "https://udemy.com",
-                            image: "https://s.udemycdn.com/meta/default-meta-image-v2.png",
-                            logo: "https://www.udemy.com/staticx/udemy/images/v7/favicon.ico",
-                            title: "Udemy - Скидки до 90%"
-                        },
-                        {
-                            name: "Steam",
-                            url: "https://store.steampowered.com",
-                            image: "https://cdn.akamai.steamstatic.com/store/home/store_home_share.jpg",
-                            logo: "https://store.akamai.steamstatic.com/public/shared/images/header/logo_steam.svg",
-                            title: "Steam - Летние скидки"
-                        }
-                    ],
-                    "top10": [
-                        {
-                            name: "Google",
-                            url: "https://google.com",
-                            logo: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
-                            color: "#4285F4",
-                            desc: "Лучшая поисковая система в мире",
-                            rank: 1
-                        },
-                        {
-                            name: "YouTube",
-                            url: "https://youtube.com",
-                            logo: "https://www.youtube.com/s/desktop/d743f786/img/favicon_144x144.png",
-                            color: "#FF0000",
-                            desc: "Крупнейший видеохостинг",
-                            rank: 2
-                        },
-                        {
-                            name: "GitHub",
-                            url: "https://github.com",
-                            logo: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-                            color: "#333",
-                            desc: "Платформа для разработчиков",
-                            rank: 3
-                        },
-                        {
-                            name: "Facebook",
-                            url: "https://facebook.com",
-                            logo: "https://facebook.com/favicon.ico",
-                            color: "#1877F2",
-                            desc: "Социальная сеть №1",
-                            rank: 4
-                        },
-                        {
-                            name: "Instagram",
-                            url: "https://instagram.com",
-                            logo: "https://instagram.com/favicon.ico",
-                            color: "#E1306C",
-                            desc: "Фото и видео хостинг",
-                            rank: 5
-                        },
-                        {
-                            name: "Twitter",
-                            url: "https://twitter.com",
-                            logo: "https://abs.twimg.com/favicons/twitter.ico",
-                            color: "#1DA1F2",
-                            desc: "Микроблоггинг платформа",
-                            rank: 6
-                        },
-                        {
-                            name: "Amazon",
-                            url: "https://amazon.com",
-                            logo: "https://www.amazon.com/favicon.ico",
-                            color: "#FF9900",
-                            desc: "Крупнейший интернет-магазин",
-                            rank: 7
-                        },
-                        {
-                            name: "Spotify",
-                            url: "https://spotify.com",
-                            logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
-                            color: "#1DB954",
-                            desc: "Музыкальный стриминговый сервис",
-                            rank: 8
-                        },
-                        {
-                            name: "Reddit",
-                            url: "https://reddit.com",
-                            logo: "https://www.redditstatic.com/desktop2x/img/favicon/android-icon-192x192.png",
-                            color: "#FF5700",
-                            desc: "Социальные новости",
-                            rank: 9
-                        },
-                        {
-                            name: "LinkedIn",
-                            url: "https://linkedin.com",
-                            logo: "https://static.licdn.com/sc/h/akt4ae504epesldzj74dzred8",
-                            color: "#0077B5",
-                            desc: "Профессиональная сеть",
-                            rank: 10
-                        }
-                    ],
-                    "popular-sites": [
-                        {
-                            name: "Google",
-                            url: "https://google.com",
-                            logo: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
-                            color: "#4285F4",
-                            desc: "Поисковая система"
-                        },
-                        {
-                            name: "YouTube",
-                            url: "https://youtube.com",
-                            logo: "https://www.youtube.com/s/desktop/d743f786/img/favicon_144x144.png",
-                            color: "#FF0000",
-                            desc: "Видеохостинг"
-                        },
-                        {
-                            name: "GitHub",
-                            url: "https://github.com",
-                            logo: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-                            color: "#333",
-                            desc: "Платформа для разработчиков"
-                        },
-                        {
-                            name: "Twitter",
-                            url: "https://twitter.com",
-                            logo: "https://abs.twimg.com/favicons/twitter.ico",
-                            color: "#1DA1F2",
-                            desc: "Микроблоггинг платформа"
-                        },
-                        {
-                            name: "Facebook",
-                            url: "https://facebook.com",
-                            logo: "https://facebook.com/favicon.ico",
-                            color: "#1877F2",
-                            desc: "Социальная сеть"
-                        },
-                        {
-                            name: "Instagram",
-                            url: "https://instagram.com",
-                            logo: "https://instagram.com/favicon.ico",
-                            color: "#E1306C",
-                            desc: "Фото и видео"
-                        },
-                        {
-                            name: "Spotify",
-                            url: "https://spotify.com",
-                            logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
-                            color: "#1DB954",
-                            desc: "Музыкальный сервис"
-                        },
-                        {
-                            name: "Amazon",
-                            url: "https://amazon.com",
-                            logo: "https://www.amazon.com/favicon.ico",
-                            color: "#FF9900",
-                            desc: "Интернет-магазин"
-                        }
-                    ]
-                };
-                saveData();
+                loadDefaultData();
             }
+        }
+        
+        function loadDefaultData() {
+            console.log('Загрузка данных по умолчанию');
+            appData = {
+                "popular-top": [
+                    {
+                        name: "Google",
+                        url: "https://google.com",
+                        logo: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+                        color: "#4285F4"
+                    },
+                    {
+                        name: "YouTube",
+                        url: "https://youtube.com",
+                        logo: "https://www.youtube.com/s/desktop/d743f786/img/favicon_144x144.png",
+                        color: "#FF0000"
+                    },
+                    {
+                        name: "GitHub",
+                        url: "https://github.com",
+                        logo: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+                        color: "#333"
+                    },
+                    {
+                        name: "Twitter",
+                        url: "https://twitter.com",
+                        logo: "https://abs.twimg.com/favicons/twitter.ico",
+                        color: "#1DA1F2"
+                    },
+                    {
+                        name: "Instagram",
+                        url: "https://instagram.com",
+                        logo: "https://instagram.com/favicon.ico",
+                        color: "#E1306C"
+                    }
+                ],
+                "weekly-offer": [
+                    {
+                        name: "Spotify",
+                        url: "https://spotify.com",
+                        image: "https://www.scdn.co/i/_global/open-graph-default.png",
+                        logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
+                        title: "Spotify - 3 месяца премиум бесплатно"
+                    },
+                    {
+                        name: "Udemy",
+                        url: "https://udemy.com",
+                        image: "https://s.udemycdn.com/meta/default-meta-image-v2.png",
+                        logo: "https://www.udemy.com/staticx/udemy/images/v7/favicon.ico",
+                        title: "Udemy - Скидки до 90%"
+                    },
+                    {
+                        name: "Steam",
+                        url: "https://store.steampowered.com",
+                        image: "https://cdn.akamai.steamstatic.com/store/home/store_home_share.jpg",
+                        logo: "https://store.akamai.steamstatic.com/public/shared/images/header/logo_steam.svg",
+                        title: "Steam - Летние скидки"
+                    }
+                ],
+                "top10": [
+                    {
+                        name: "Google",
+                        url: "https://google.com",
+                        logo: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+                        color: "#4285F4",
+                        desc: "Лучшая поисковая система в мире",
+                        rank: 1
+                    },
+                    {
+                        name: "YouTube",
+                        url: "https://youtube.com",
+                        logo: "https://www.youtube.com/s/desktop/d743f786/img/favicon_144x144.png",
+                        color: "#FF0000",
+                        desc: "Крупнейший видеохостинг",
+                        rank: 2
+                    },
+                    {
+                        name: "GitHub",
+                        url: "https://github.com",
+                        logo: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+                        color: "#333",
+                        desc: "Платформа для разработчиков",
+                        rank: 3
+                    },
+                    {
+                        name: "Facebook",
+                        url: "https://facebook.com",
+                        logo: "https://facebook.com/favicon.ico",
+                        color: "#1877F2",
+                        desc: "Социальная сеть №1",
+                        rank: 4
+                    },
+                    {
+                        name: "Instagram",
+                        url: "https://instagram.com",
+                        logo: "https://instagram.com/favicon.ico",
+                        color: "#E1306C",
+                        desc: "Фото и видео хостинг",
+                        rank: 5
+                    }
+                ],
+                "popular-sites": [
+                    {
+                        name: "Google",
+                        url: "https://google.com",
+                        logo: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+                        color: "#4285F4",
+                        desc: "Поисковая система"
+                    },
+                    {
+                        name: "YouTube",
+                        url: "https://youtube.com",
+                        logo: "https://www.youtube.com/s/desktop/d743f786/img/favicon_144x144.png",
+                        color: "#FF0000",
+                        desc: "Видеохостинг"
+                    },
+                    {
+                        name: "GitHub",
+                        url: "https://github.com",
+                        logo: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+                        color: "#333",
+                        desc: "Платформа для разработчиков"
+                    },
+                    {
+                        name: "Twitter",
+                        url: "https://twitter.com",
+                        logo: "https://abs.twimg.com/favicons/twitter.ico",
+                        color: "#1DA1F2",
+                        desc: "Микроблоггинг платформа"
+                    }
+                ]
+            };
+            saveData();
         }
         
         function saveData() {
             localStorage.setItem('webAppData', JSON.stringify(appData));
-            // Принудительно обновляем данные
-            loadData();
+            console.log('Данные сохранены');
+            // Принудительно обновляем интерфейс
             renderAll();
         }
         
@@ -1050,7 +1003,7 @@
                 
                 slide.innerHTML = `
                     <div class="popular-top-item">
-                        <div class="popular-top-logo" style="background-color: ${item.color || '#4285F4'}; ${item.logo ? `background-image: url(${item.logo})` : ''}">
+                        <div class="popular-top-logo" style="background-color: ${item.color || '#4285F4'}; ${item.logo ? `background-image: url(${item.logo}?t=${Date.now()})` : ''}">
                             ${item.logo ? '' : `<i class="fab fa-${item.icon || 'globe'}"></i>`}
                         </div>
                         <div class="popular-top-name">${item.name}</div>
@@ -1062,9 +1015,10 @@
             });
             
             // Обновляем Swiper
-            popularTopSwiper.update();
-            popularTopSwiper.slideTo(0, 0);
-            popularTopSwiper.updateSlides();
+            if (popularTopSwiper) {
+                popularTopSwiper.update();
+                popularTopSwiper.slideTo(0, 0);
+            }
             
             // Добавляем обработчики через делегирование
             container.addEventListener('click', function(e) {
@@ -1084,9 +1038,9 @@
                 
                 slide.innerHTML = `
                     <div class="weekly-offer-item">
-                        <img src="${item.image || 'https://via.placeholder.com/280x150/333/FFFFFF?text=No+Image'}" class="weekly-offer-image" alt="${item.name}">
+                        <img src="${item.image || 'https://via.placeholder.com/280x150/333/FFFFFF?text=No+Image'}?t=${Date.now()}" class="weekly-offer-image" alt="${item.name}">
                         <div class="weekly-offer-footer">
-                            <div class="weekly-offer-logo" style="${item.logo ? `background-image: url(${item.logo})` : `background-color: ${item.color || '#4285F4'}`}"></div>
+                            <div class="weekly-offer-logo" style="${item.logo ? `background-image: url(${item.logo}?t=${Date.now()})` : `background-color: ${item.color || '#4285F4'}`}"></div>
                             <div class="weekly-offer-title">${item.title || item.name}</div>
                             <button class="weekly-offer-btn" data-url="${item.url}">
                                 <i class="fas fa-arrow-right"></i>
@@ -1099,9 +1053,10 @@
             });
             
             // Обновляем Swiper
-            weeklyOfferSwiper.update();
-            weeklyOfferSwiper.slideTo(0, 0);
-            weeklyOfferSwiper.updateSlides();
+            if (weeklyOfferSwiper) {
+                weeklyOfferSwiper.update();
+                weeklyOfferSwiper.slideTo(0, 0);
+            }
             
             // Добавляем обработчики через делегирование
             container.addEventListener('click', function(e) {
@@ -1126,7 +1081,7 @@
                 slide.innerHTML = `
                     <div class="top10-item">
                         <div class="top10-rank">${item.rank}</div>
-                        <div class="top10-logo" style="background-color: ${item.color || '#4285F4'}; ${item.logo ? `background-image: url(${item.logo})` : ''}">
+                        <div class="top10-logo" style="background-color: ${item.color || '#4285F4'}; ${item.logo ? `background-image: url(${item.logo}?t=${Date.now()})` : ''}">
                             ${item.logo ? '' : `<i class="fab fa-${item.icon || 'globe'}"></i>`}
                         </div>
                         <div class="top10-name">${item.name}</div>
@@ -1141,9 +1096,10 @@
             });
             
             // Обновляем Swiper
-            top10Swiper.update();
-            top10Swiper.slideTo(0, 0);
-            top10Swiper.updateSlides();
+            if (top10Swiper) {
+                top10Swiper.update();
+                top10Swiper.slideTo(0, 0);
+            }
             
             // Добавляем обработчики через делегирование
             container.addEventListener('click', function(e) {
@@ -1163,7 +1119,7 @@
                 listItem.dataset.url = item.url;
                 
                 listItem.innerHTML = `
-                    <div class="list-item-icon" style="background-color: ${item.color || '#4285F4'}; ${item.logo ? `background-image: url(${item.logo})` : ''}">
+                    <div class="list-item-icon" style="background-color: ${item.color || '#4285F4'}; ${item.logo ? `background-image: url(${item.logo}?t=${Date.now()})` : ''}">
                         ${item.logo ? '' : `<i class="fab fa-${item.icon || 'globe'}"></i>`}
                     </div>
                     <div class="list-item-content">
