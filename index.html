@@ -61,7 +61,7 @@
             color: var(--tg-link-color);
             font-size: 14px;
             cursor: pointer;
-            display: none; /* Hidden by default */
+            display: none;
         }
         
         .container {
@@ -108,7 +108,8 @@
             font-size: 18px;
             margin-right: 16px;
             flex-shrink: 0;
-            background-size: cover;
+            background-size: contain;
+            background-repeat: no-repeat;
             background-position: center;
         }
         
@@ -196,7 +197,8 @@
             align-items: center;
             justify-content: center;
             color: white;
-            background-size: cover;
+            background-size: contain;
+            background-repeat: no-repeat;
             background-position: center;
         }
         
@@ -249,7 +251,8 @@
             margin-right: 10px;
             flex-shrink: 0;
             background-color: #ccc;
-            background-size: cover;
+            background-size: contain;
+            background-repeat: no-repeat;
             background-position: center;
         }
         
@@ -309,7 +312,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-size: cover;
+            background-size: contain;
+            background-repeat: no-repeat;
             background-position: center;
         }
         
@@ -737,7 +741,7 @@
             document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.themeParams.secondary_bg_color || '#f4f4f5');
             
             // Check if user is admin (replace with your Telegram ID)
-            const adminIds = [348283352]; // Add your Telegram ID here
+            const adminIds = [123456789]; // Add your Telegram ID here
             if (adminIds.includes(tg.initDataUnsafe.user?.id)) {
                 document.getElementById('admin-btn').style.display = 'block';
             }
@@ -781,7 +785,7 @@
             if (savedData) {
                 appData = JSON.parse(savedData);
             } else {
-                // Default data
+                // Default data with more sites
                 appData = {
                     "popular-top": [
                         {
@@ -801,6 +805,24 @@
                             url: "https://github.com",
                             logo: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
                             color: "#333"
+                        },
+                        {
+                            name: "Twitter",
+                            url: "https://twitter.com",
+                            logo: "https://abs.twimg.com/favicons/twitter.ico",
+                            color: "#1DA1F2"
+                        },
+                        {
+                            name: "Instagram",
+                            url: "https://instagram.com",
+                            logo: "https://instagram.com/favicon.ico",
+                            color: "#E1306C"
+                        },
+                        {
+                            name: "Facebook",
+                            url: "https://facebook.com",
+                            logo: "https://facebook.com/favicon.ico",
+                            color: "#1877F2"
                         }
                     ],
                     "weekly-offer": [
@@ -810,6 +832,20 @@
                             image: "https://assets.nflxext.com/ffe/siteui/vlv3/9d3533b2-0e2b-40b2-95e0-ecd7979cc88b/2b5fa429-bee8-4b02-b915-1b91a3f554c6/RU-ru-20240311-popsignuptwoweeks-perspective_alpha_website_large.jpg",
                             logo: "https://upload.wikimedia.org/wikipedia/commons/7/77/Netflix_icon.svg",
                             title: "Netflix - Специальное предложение"
+                        },
+                        {
+                            name: "Spotify",
+                            url: "https://spotify.com",
+                            image: "https://www.scdn.co/i/_global/open-graph-default.png",
+                            logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
+                            title: "Spotify - 3 месяца бесплатно"
+                        },
+                        {
+                            name: "Udemy",
+                            url: "https://udemy.com",
+                            image: "https://s.udemycdn.com/meta/default-meta-image-v2.png",
+                            logo: "https://www.udemy.com/staticx/udemy/images/v7/favicon.ico",
+                            title: "Udemy - Скидки до 90%"
                         }
                     ],
                     "top10": [
@@ -828,6 +864,70 @@
                             color: "#FF0000",
                             desc: "Крупнейший видеохостинг",
                             rank: 2
+                        },
+                        {
+                            name: "GitHub",
+                            url: "https://github.com",
+                            logo: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+                            color: "#333",
+                            desc: "Платформа для разработчиков",
+                            rank: 3
+                        },
+                        {
+                            name: "Facebook",
+                            url: "https://facebook.com",
+                            logo: "https://facebook.com/favicon.ico",
+                            color: "#1877F2",
+                            desc: "Социальная сеть №1",
+                            rank: 4
+                        },
+                        {
+                            name: "Instagram",
+                            url: "https://instagram.com",
+                            logo: "https://instagram.com/favicon.ico",
+                            color: "#E1306C",
+                            desc: "Фото и видео хостинг",
+                            rank: 5
+                        },
+                        {
+                            name: "Twitter",
+                            url: "https://twitter.com",
+                            logo: "https://abs.twimg.com/favicons/twitter.ico",
+                            color: "#1DA1F2",
+                            desc: "Микроблоггинг платформа",
+                            rank: 6
+                        },
+                        {
+                            name: "Amazon",
+                            url: "https://amazon.com",
+                            logo: "https://www.amazon.com/favicon.ico",
+                            color: "#FF9900",
+                            desc: "Крупнейший интернет-магазин",
+                            rank: 7
+                        },
+                        {
+                            name: "Netflix",
+                            url: "https://netflix.com",
+                            logo: "https://upload.wikimedia.org/wikipedia/commons/7/77/Netflix_icon.svg",
+                            color: "#E50914",
+                            desc: "Стриминговый сервис",
+                            rank: 8
+                        },
+                        {
+                            name: "Reddit",
+                            url: "https://reddit.com",
+                            logo: "https://www.redditstatic.com/desktop2x/img/favicon/android-icon-192x192.png",
+                            color: "#FF5700",
+                            desc: "Социальные новости",
+                            rank: 9
+                        },
+                        {
+                            name: "LinkedIn",
+                            url: "https://linkedin.com",
+                            logo: "https://static.licdn.com/sc/h/akt4ae504epesldzj74dzred8",
+                            color: "#0077B5",
+                            desc: "Профессиональная сеть",
+                            rank: 10
                         }
                     ],
                     "popular-sites": [
@@ -844,6 +944,48 @@
                             logo: "https://www.youtube.com/s/desktop/d743f786/img/favicon_144x144.png",
                             color: "#FF0000",
                             desc: "Видеохостинг"
+                        },
+                        {
+                            name: "GitHub",
+                            url: "https://github.com",
+                            logo: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+                            color: "#333",
+                            desc: "Платформа для разработчиков"
+                        },
+                        {
+                            name: "Twitter",
+                            url: "https://twitter.com",
+                            logo: "https://abs.twimg.com/favicons/twitter.ico",
+                            color: "#1DA1F2",
+                            desc: "Микроблоггинг платформа"
+                        },
+                        {
+                            name: "Facebook",
+                            url: "https://facebook.com",
+                            logo: "https://facebook.com/favicon.ico",
+                            color: "#1877F2",
+                            desc: "Социальная сеть"
+                        },
+                        {
+                            name: "Instagram",
+                            url: "https://instagram.com",
+                            logo: "https://instagram.com/favicon.ico",
+                            color: "#E1306C",
+                            desc: "Фото и видео"
+                        },
+                        {
+                            name: "Netflix",
+                            url: "https://netflix.com",
+                            logo: "https://upload.wikimedia.org/wikipedia/commons/7/77/Netflix_icon.svg",
+                            color: "#E50914",
+                            desc: "Стриминговый сервис"
+                        },
+                        {
+                            name: "Amazon",
+                            url: "https://amazon.com",
+                            logo: "https://www.amazon.com/favicon.ico",
+                            color: "#FF9900",
+                            desc: "Интернет-магазин"
                         }
                     ]
                 };
