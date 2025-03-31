@@ -6,14 +6,157 @@
     <title>WebApp</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Previous styles remain unchanged, adding new styles below */
+        :root {
+            --tg-theme-bg-color: #ffffff;
+            --tg-theme-text-color: #000000;
+            --tg-theme-hint-color: #707579;
+            --tg-theme-link-color: #3390ec;
+            --tg-theme-button-color: #5bc8fb;
+            --tg-theme-button-text-color: #ffffff;
+            --tg-theme-secondary-bg-color: #f4f4f5;
+            
+            /* Custom variables */
+            --tg-bg-color: var(--tg-theme-bg-color);
+            --tg-text-color: var(--tg-theme-text-color);
+            --tg-hint-color: var(--tg-theme-hint-color);
+            --tg-link-color: var(--tg-theme-link-color);
+            --tg-accent-color: var(--tg-theme-button-color);
+            --tg-secondary-bg: var(--tg-theme-secondary-bg-color);
+            --tg-green: #31b545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: var(--tg-bg-color);
+            color: var(--tg-text-color);
+            padding-bottom: 60px;
+        }
+        
+        .header {
+            padding: 16px;
+            font-size: 20px;
+            font-weight: 500;
+            text-align: center;
+            background-color: var(--tg-bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            padding: 0 8px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-weight: 500;
+            font-size: 18px;
+            padding: 8px 16px;
+            color: var(--tg-text-color);
+        }
+        
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: var(--tg-bg-color);
+            border-radius: 12px;
+            margin: 8px 0;
+            cursor: pointer;
+        }
+        
+        .list-item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+        
+        .list-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .list-item-title {
+            font-weight: 500;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .list-item-description {
+            font-size: 13px;
+            color: var(--tg-hint-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .list-item-arrow {
+            color: var(--tg-hint-color);
+            margin-left: 8px;
+        }
+        
+        .tabs {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background-color: var(--tg-bg-color);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            color: var(--tg-hint-color);
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .tab.active {
+            color: var(--tg-link-color);
+        }
+        
+        .tab i {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 20px;
+        }
         
         /* Swiper containers */
         .swiper-container {
             width: 100%;
             overflow-x: auto;
             white-space: nowrap;
-            padding: 10px 0;
+            padding: 10px 16px;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none; /* Firefox */
         }
@@ -63,6 +206,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            font-size: 14px;
         }
         
         .play-btn {
@@ -73,6 +217,7 @@
             border-radius: 8px;
             font-size: 12px;
             width: 100%;
+            cursor: pointer;
         }
         
         /* Weekly Offers (1 big item) */
@@ -101,11 +246,13 @@
             height: 30px;
             border-radius: 8px;
             margin-right: 10px;
+            flex-shrink: 0;
         }
         
         .weekly-offer-title {
             flex: 1;
             font-weight: 500;
+            font-size: 14px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -121,6 +268,8 @@
             align-items: center;
             justify-content: center;
             border: none;
+            flex-shrink: 0;
+            cursor: pointer;
         }
         
         /* Top 10 (1 item with rank) */
@@ -173,6 +322,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            font-size: 14px;
         }
         
         .top10-desc {
@@ -198,11 +348,13 @@
         .section-title {
             font-weight: 500;
             color: var(--tg-text-color);
+            font-size: 18px;
         }
         
         .section-link {
             color: var(--tg-link-color);
             font-size: 14px;
+            cursor: pointer;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -397,17 +549,124 @@
                     </div>
                 </div>
                 
-                <!-- Other list items remain unchanged -->
+                <div class="list-item" onclick="openSite('https://youtube.com')">
+                    <div class="list-item-icon" style="background-color: #FF0000;">
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                    <div class="list-item-content">
+                        <div class="list-item-title">YouTube</div>
+                        <div class="list-item-description">Видеохостинг</div>
+                    </div>
+                    <div class="list-item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                
+                <div class="list-item" onclick="openSite('https://github.com')">
+                    <div class="list-item-icon" style="background-color: #333;">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <div class="list-item-content">
+                        <div class="list-item-title">GitHub</div>
+                        <div class="list-item-description">Платформа для разработчиков</div>
+                    </div>
+                    <div class="list-item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- Other tabs content remains unchanged -->
+        <!-- Other tabs content -->
+        <div id="test2" class="tab-content">
+            <div class="section">
+                <div class="section-title">Вторая вкладка</div>
+                <div class="list-item">
+                    <div class="list-item-icon" style="background-color: #1877F2;">
+                        <i class="fab fa-facebook"></i>
+                    </div>
+                    <div class="list-item-content">
+                        <div class="list-item-title">Facebook</div>
+                        <div class="list-item-description">Социальная сеть</div>
+                    </div>
+                    <div class="list-item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="test3" class="tab-content">
+            <div class="section">
+                <div class="section-title">Третья вкладка</div>
+                <div class="list-item">
+                    <div class="list-item-icon" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);">
+                        <i class="fab fa-instagram"></i>
+                    </div>
+                    <div class="list-item-content">
+                        <div class="list-item-title">Instagram</div>
+                        <div class="list-item-description">Фото и видео</div>
+                    </div>
+                    <div class="list-item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Tabs navigation remains unchanged -->
+    <!-- Tabs navigation -->
+    <div class="tabs">
+        <div class="tab active" onclick="openTab('test1')">
+            <i class="fas fa-home"></i>
+            <span>Главная</span>
+        </div>
+        <div class="tab" onclick="openTab('test2')">
+            <i class="fas fa-gamepad"></i>
+            <span>Игры</span>
+        </div>
+        <div class="tab" onclick="openTab('test3')">
+            <i class="fas fa-user"></i>
+            <span>Профиль</span>
+        </div>
+    </div>
     
     <script>
-        // Previous JavaScript remains unchanged
+        let tg = window.Telegram.WebApp;
+        
+        function initApp() {
+            tg.expand();
+            tg.enableClosingConfirmation();
+            
+            // Set header color
+            document.getElementById('page-header').style.backgroundColor = tg.headerColor;
+            
+            // Set theme params
+            document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#ffffff');
+            document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000000');
+            document.documentElement.style.setProperty('--tg-theme-hint-color', tg.themeParams.hint_color || '#707579');
+            document.documentElement.style.setProperty('--tg-theme-link-color', tg.themeParams.link_color || '#3390ec');
+            document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#5bc8fb');
+            document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#ffffff');
+            document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.themeParams.secondary_bg_color || '#f4f4f5');
+        }
+        
+        function openTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            event.currentTarget.classList.add('active');
+        }
         
         // Function to handle site opening
         function openSite(url) {
