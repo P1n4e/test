@@ -282,7 +282,7 @@
         /* Top 10 (1 item with rank) */
         .top10-item {
             width: 160px;
-            height: 200px; /* Уменьшенная высота (было 240px) */
+            height: 200px;
             background-color: var(--tg-secondary-bg);
             border-radius: 12px;
             padding: 12px;
@@ -320,7 +320,7 @@
             background-repeat: no-repeat;
             background-position: center;
             flex-shrink: 0;
-            background-color: #f0f0f0; /* Фон для логотипов */
+            background-color: #f0f0f0;
         }
         
         .top10-name {
@@ -344,7 +344,7 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             flex-grow: 1;
-            min-height: 36px; /* Минимальная высота для 2 строк */
+            min-height: 36px;
         }
         
         .top10-btn-container {
@@ -839,18 +839,11 @@
                     ],
                     "weekly-offer": [
                         {
-                            name: "Netflix",
-                            url: "https://netflix.com",
-                            image: "https://assets.nflxext.com/ffe/siteui/vlv3/9d3533b2-0e2b-40b2-95e0-ecd7979cc88b/2b5fa429-bee8-4b02-b915-1b91a3f554c6/RU-ru-20240311-popsignuptwoweeks-perspective_alpha_website_large.jpg",
-                            logo: "https://upload.wikimedia.org/wikipedia/commons/7/77/Netflix_icon.svg",
-                            title: "Netflix - Специальное предложение"
-                        },
-                        {
                             name: "Spotify",
                             url: "https://spotify.com",
                             image: "https://www.scdn.co/i/_global/open-graph-default.png",
                             logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
-                            title: "Spotify - 3 месяца бесплатно"
+                            title: "Spotify - 3 месяца премиум бесплатно"
                         },
                         {
                             name: "Udemy",
@@ -858,6 +851,13 @@
                             image: "https://s.udemycdn.com/meta/default-meta-image-v2.png",
                             logo: "https://www.udemy.com/staticx/udemy/images/v7/favicon.ico",
                             title: "Udemy - Скидки до 90%"
+                        },
+                        {
+                            name: "Steam",
+                            url: "https://store.steampowered.com",
+                            image: "https://cdn.akamai.steamstatic.com/store/home/store_home_share.jpg",
+                            logo: "https://store.akamai.steamstatic.com/public/shared/images/header/logo_steam.svg",
+                            title: "Steam - Летние скидки"
                         }
                     ],
                     "top10": [
@@ -918,11 +918,11 @@
                             rank: 7
                         },
                         {
-                            name: "Netflix",
-                            url: "https://netflix.com",
-                            logo: "https://upload.wikimedia.org/wikipedia/commons/7/77/Netflix_icon.svg",
-                            color: "#E50914",
-                            desc: "Стриминговый сервис",
+                            name: "Spotify",
+                            url: "https://spotify.com",
+                            logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
+                            color: "#1DB954",
+                            desc: "Музыкальный стриминговый сервис",
                             rank: 8
                         },
                         {
@@ -986,11 +986,11 @@
                             desc: "Фото и видео"
                         },
                         {
-                            name: "Netflix",
-                            url: "https://netflix.com",
-                            logo: "https://upload.wikimedia.org/wikipedia/commons/7/77/Netflix_icon.svg",
-                            color: "#E50914",
-                            desc: "Стриминговый сервис"
+                            name: "Spotify",
+                            url: "https://spotify.com",
+                            logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
+                            color: "#1DB954",
+                            desc: "Музыкальный сервис"
                         },
                         {
                             name: "Amazon",
@@ -1007,6 +1007,9 @@
         
         function saveData() {
             localStorage.setItem('webAppData', JSON.stringify(appData));
+            // Принудительно обновляем данные
+            loadData();
+            renderAll();
         }
         
         function initSwipers() {
@@ -1051,14 +1054,24 @@
                             ${item.logo ? '' : `<i class="fab fa-${item.icon || 'globe'}"></i>`}
                         </div>
                         <div class="popular-top-name">${item.name}</div>
-                        <button class="play-btn" onclick="openSite('${item.url}')">Играть</button>
+                        <button class="play-btn" data-url="${item.url}">Играть</button>
                     </div>
                 `;
                 
                 container.appendChild(slide);
             });
             
+            // Обновляем Swiper
             popularTopSwiper.update();
+            popularTopSwiper.slideTo(0, 0);
+            popularTopSwiper.updateSlides();
+            
+            // Добавляем обработчики через делегирование
+            container.addEventListener('click', function(e) {
+                if (e.target.classList.contains('play-btn')) {
+                    openSite(e.target.dataset.url);
+                }
+            });
         }
         
         function renderWeeklyOffer() {
@@ -1075,7 +1088,7 @@
                         <div class="weekly-offer-footer">
                             <div class="weekly-offer-logo" style="${item.logo ? `background-image: url(${item.logo})` : `background-color: ${item.color || '#4285F4'}`}"></div>
                             <div class="weekly-offer-title">${item.title || item.name}</div>
-                            <button class="weekly-offer-btn" onclick="openSite('${item.url}')">
+                            <button class="weekly-offer-btn" data-url="${item.url}">
                                 <i class="fas fa-arrow-right"></i>
                             </button>
                         </div>
@@ -1085,7 +1098,18 @@
                 container.appendChild(slide);
             });
             
+            // Обновляем Swiper
             weeklyOfferSwiper.update();
+            weeklyOfferSwiper.slideTo(0, 0);
+            weeklyOfferSwiper.updateSlides();
+            
+            // Добавляем обработчики через делегирование
+            container.addEventListener('click', function(e) {
+                const btn = e.target.closest('.weekly-offer-btn');
+                if (btn) {
+                    openSite(btn.dataset.url);
+                }
+            });
         }
         
         function renderTop10() {
@@ -1108,7 +1132,7 @@
                         <div class="top10-name">${item.name}</div>
                         <div class="top10-desc">${item.desc || 'Описание отсутствует'}</div>
                         <div class="top10-btn-container">
-                            <button class="play-btn" onclick="openSite('${item.url}')">Играть</button>
+                            <button class="play-btn" data-url="${item.url}">Играть</button>
                         </div>
                     </div>
                 `;
@@ -1116,7 +1140,17 @@
                 container.appendChild(slide);
             });
             
+            // Обновляем Swiper
             top10Swiper.update();
+            top10Swiper.slideTo(0, 0);
+            top10Swiper.updateSlides();
+            
+            // Добавляем обработчики через делегирование
+            container.addEventListener('click', function(e) {
+                if (e.target.classList.contains('play-btn')) {
+                    openSite(e.target.dataset.url);
+                }
+            });
         }
         
         function renderPopularSites() {
@@ -1126,7 +1160,7 @@
             appData['popular-sites'].forEach(item => {
                 const listItem = document.createElement('div');
                 listItem.className = 'list-item';
-                listItem.onclick = () => openSite(item.url);
+                listItem.dataset.url = item.url;
                 
                 listItem.innerHTML = `
                     <div class="list-item-icon" style="background-color: ${item.color || '#4285F4'}; ${item.logo ? `background-image: url(${item.logo})` : ''}">
@@ -1142,6 +1176,14 @@
                 `;
                 
                 container.appendChild(listItem);
+            });
+            
+            // Добавляем обработчики через делегирование
+            container.addEventListener('click', function(e) {
+                const listItem = e.target.closest('.list-item');
+                if (listItem) {
+                    openSite(listItem.dataset.url);
+                }
             });
         }
         
@@ -1219,7 +1261,6 @@
             
             appData[blockType].push(newItem);
             saveData();
-            renderAll();
             
             // Clear form
             document.getElementById('item-name').value = '';
@@ -1244,7 +1285,6 @@
             // Remove old item
             appData[blockType].splice(index, 1);
             saveData();
-            renderAll();
         }
         
         function deleteItem(index) {
@@ -1252,7 +1292,6 @@
                 const blockType = document.getElementById('block-type').value;
                 appData[blockType].splice(index, 1);
                 saveData();
-                renderAll();
             }
         }
         
@@ -1261,7 +1300,6 @@
             if (confirm(`Вы уверены, что хотите удалить ВСЕ элементы из раздела "${blockType}"?`)) {
                 appData[blockType] = [];
                 saveData();
-                renderAll();
             }
         }
         
